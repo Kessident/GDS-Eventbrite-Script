@@ -33,28 +33,14 @@ public class GDSEventbriteScript {
             System.out.println("border bottom " + style.getBorderBottom() + "\n");
         }*/
 
+
+        //Take CSV data into ArrayList
         ArrayList<Volunteer> volunteerList = new ArrayList<>();
         Reader eventbriteCSVData = new FileReader(EVENTBRITE_CSV_PATH);
         Iterable<CSVRecord> volunteerCSVList = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(eventbriteCSVData);
-        for (CSVRecord volunteer : volunteerCSVList) {
+        for (CSVRecord CSVVolunteer : volunteerCSVList) {
             Volunteer currentVolunteer = new Volunteer();
-            currentVolunteer.setFirstName(volunteer.get("First Name"));
-            currentVolunteer.setLastName(volunteer.get("Last Name"));
-            currentVolunteer.setHomeAddress(volunteer.get("Home Address 1"));
-            currentVolunteer.setHomeAddressTwo(volunteer.get("Home Address 2"));
-            currentVolunteer.setCity(volunteer.get("Home City"));
-            currentVolunteer.setState(volunteer.get("Home State"));
-            currentVolunteer.setZipCode(volunteer.get("Home Zip"));
-            currentVolunteer.setCellPhone(volunteer.get("Cell Phone"));
-            currentVolunteer.setVisitor(volunteer.get("Are you a Visitor to PRUMC?"));
-            currentVolunteer.setFirstTime(volunteer.get("Is this your first Great Day of Service?"));
-            currentVolunteer.setAge(volunteer.get("Age?"));
-            currentVolunteer.setFirstChoice(volunteer.get(23));
-            currentVolunteer.setSecondChoice(volunteer.get(24));
-            currentVolunteer.setThirdChoice(volunteer.get(25));
-            currentVolunteer.setEmailAddress(volunteer.get("Email"));
-            currentVolunteer.setSpecial(volunteer.get(19));
-            currentVolunteer.trimChoices();
+            setVolunteerInfo(currentVolunteer, CSVVolunteer);
             volunteerList.add(currentVolunteer);
         }
 
@@ -69,43 +55,17 @@ public class GDSEventbriteScript {
         headerCellStyle.setFont(headerFont);
         headerCellStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        headerCellStyle.setBorderTop(BorderStyle.THIN);
-        headerCellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
-        headerCellStyle.setBorderRight(BorderStyle.THIN);
-        headerCellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        headerCellStyle.setBorderBottom(BorderStyle.THIN);
-        headerCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-        headerCellStyle.setBorderLeft(BorderStyle.THIN);
-        headerCellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-
+        setExcelBorder(headerCellStyle);
 
         //Vol# Column Style
         CellStyle volColumnStyle = workbook.createCellStyle();
         volColumnStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         volColumnStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        volColumnStyle.setBorderTop(BorderStyle.THIN);
-        volColumnStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
-        volColumnStyle.setBorderRight(BorderStyle.THIN);
-        volColumnStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        volColumnStyle.setBorderBottom(BorderStyle.THIN);
-        volColumnStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-        volColumnStyle.setBorderLeft(BorderStyle.THIN);
-        volColumnStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-
+        setExcelBorder(volColumnStyle);
 
         //Volunteer Information Style
         CellStyle volunteerInfoStyle = workbook.createCellStyle();
-        volunteerInfoStyle.setBorderTop(BorderStyle.THIN);
-        volunteerInfoStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
-        volunteerInfoStyle.setBorderRight(BorderStyle.THIN);
-        volunteerInfoStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        volunteerInfoStyle.setBorderBottom(BorderStyle.THIN);
-        volunteerInfoStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-        volunteerInfoStyle.setBorderLeft(BorderStyle.THIN);
-        volunteerInfoStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
-
+        setExcelBorder(volunteerInfoStyle);
 
         //Initial Row - Page num, date
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -114,77 +74,80 @@ public class GDSEventbriteScript {
         int currentYear = localDateTime.getYear();
         String currentDateFormatted = currentMonth + " " + currentDay + ", " + currentYear;
 
-        Cell pageTitle = row.createCell(1);
-        pageTitle.setCellValue("Eventbrite Signups " + currentDateFormatted);
-        Cell pageNum = row.createCell(13);
-        pageNum.setCellValue("P " + (rowNum / 32) + "/" + volunteerList.size() / 16);
+        int rowNum = 0;
+        for(int i = 0; i < volunteerList.size(); i++){
+            //Create Init Row
+            Row initRow = sheet.createRow(rowNum++);
+            Cell pageTitle = initRow.createCell(1);
+            pageTitle.setCellValue("Eventbrite Signups " + currentDateFormatted);
+            Cell pageNum = initRow.createCell(13);
+            pageNum.setCellValue("P " + (rowNum / 32) + "/" + volunteerList.size() / 16);
+
+            //Header Row
+            Row headerRow = sheet.createRow(rowNum++);
+            for (int j = 0; j < columns.length; j++){
+                Cell cell = headerRow.createCell(j);
+                cell.setCellValue(columns[j]);
+                cell.setCellStyle(headerCellStyle);
+            }
 
 
-        //Header Row
-        Row headerRow = sheet.createRow(1);
-        for (int i = 0; i < columns.length; i++){
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(columns[i]);
-            cell.setCellStyle(headerCellStyle);
-        }
+            //16 Vol Rows
+            Volunteer currentEntry = volunteerList.get(i);
+            Row firstInfoRow = sheet.createRow(rowNum++);
+            firstInfoRow.createCell(0).setCellStyle(volColumnStyle);
 
-        //Volunteer Rows
-        int rowNum = 2;
-        for (Volunteer vol : volunteerList){
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellStyle(volColumnStyle);
-
-            Cell firstNameCell = row.createCell(1);
-            firstNameCell.setCellValue(vol.getFirstName());
+            Cell firstNameCell = firstInfoRow.createCell(1);
+            firstNameCell.setCellValue(currentEntry.getFirstName());
             firstNameCell.setCellStyle(volunteerInfoStyle);
-            Cell lastNameCell = row.createCell(2);
-            lastNameCell.setCellValue(vol.getLastName());
+            Cell lastNameCell = firstInfoRow.createCell(2);
+            lastNameCell.setCellValue(currentEntry.getLastName());
             lastNameCell.setCellStyle(volunteerInfoStyle);
-            Cell homeAddressCell = row.createCell(3);
-            homeAddressCell.setCellValue(vol.getHomeAddress());
+            Cell homeAddressCell = firstInfoRow.createCell(3);
+            homeAddressCell.setCellValue(currentEntry.getHomeAddress());
             homeAddressCell.setCellStyle(volunteerInfoStyle);
-            Cell homeAddress2Cell = row.createCell(4);
-            homeAddress2Cell.setCellValue(vol.getHomeAddressTwo());
+            Cell homeAddress2Cell = firstInfoRow.createCell(4);
+            homeAddress2Cell.setCellValue(currentEntry.getHomeAddressTwo());
             homeAddress2Cell.setCellStyle(volunteerInfoStyle);
-            Cell cityCell = row.createCell(5);
-            cityCell.setCellValue(vol.getCity());
+            Cell cityCell = firstInfoRow.createCell(5);
+            cityCell.setCellValue(currentEntry.getCity());
             cityCell.setCellStyle(volunteerInfoStyle);
-            Cell stateCell = row.createCell(6);
-            stateCell.setCellValue(vol.getState());
+            Cell stateCell = firstInfoRow.createCell(6);
+            stateCell.setCellValue(currentEntry.getState());
             stateCell.setCellStyle(volunteerInfoStyle);
-            Cell zipCodeCell = row.createCell(7);
-            zipCodeCell.setCellValue(vol.getZipCode());
+            Cell zipCodeCell = firstInfoRow.createCell(7);
+            zipCodeCell.setCellValue(currentEntry.getZipCode());
             zipCodeCell.setCellStyle(volunteerInfoStyle);
-            Cell cellPhoneCell = row.createCell(8);
-            cellPhoneCell.setCellValue(vol.getCellPhone());
+            Cell cellPhoneCell = firstInfoRow.createCell(8);
+            cellPhoneCell.setCellValue(currentEntry.getCellPhone());
             cellPhoneCell.setCellStyle(volunteerInfoStyle);
-            Cell isVisitorCell = row.createCell(9);
-            isVisitorCell.setCellValue(vol.getVisitor());
+            Cell isVisitorCell = firstInfoRow.createCell(9);
+            isVisitorCell.setCellValue(currentEntry.getVisitor());
             isVisitorCell.setCellStyle(volunteerInfoStyle);
-            Cell isFirstTimeCell = row.createCell(10);
-            isFirstTimeCell.setCellValue(vol.getFirstTime());
+            Cell isFirstTimeCell = firstInfoRow.createCell(10);
+            isFirstTimeCell.setCellValue(currentEntry.getFirstTime());
             isFirstTimeCell.setCellStyle(volunteerInfoStyle);
-            Cell ageCell = row.createCell(11);
-            ageCell.setCellValue(vol.getAge());
+            Cell ageCell = firstInfoRow.createCell(11);
+            ageCell.setCellValue(currentEntry.getAge());
             ageCell.setCellStyle(volunteerInfoStyle);
-            Cell firstChoiceCell = row.createCell(12);
-            firstChoiceCell.setCellValue(vol.getFirstChoice());
+            Cell firstChoiceCell = firstInfoRow.createCell(12);
+            firstChoiceCell.setCellValue(currentEntry.getFirstChoice());
             firstChoiceCell.setCellStyle(volunteerInfoStyle);
-            Cell secondChoiceCell = row.createCell(13);
-            secondChoiceCell.setCellValue(vol.getSecondChoice());
+            Cell secondChoiceCell = firstInfoRow.createCell(13);
+            secondChoiceCell.setCellValue(currentEntry.getSecondChoice());
             secondChoiceCell.setCellStyle(volunteerInfoStyle);
-            Cell thirdChoiceCell = row.createCell(14);
-            thirdChoiceCell.setCellValue(vol.getThirdChoice());
+            Cell thirdChoiceCell = firstInfoRow.createCell(14);
+            thirdChoiceCell.setCellValue(currentEntry.getThirdChoice());
             thirdChoiceCell.setCellStyle(volunteerInfoStyle);
 
-            Row newRow = sheet.createRow(rowNum++);
-            newRow.createCell(0).setCellStyle(volColumnStyle);
+            Row secondInfoRow = sheet.createRow(rowNum++);
+            secondInfoRow.createCell(0).setCellStyle(volColumnStyle);
 
-            Cell emailCell = newRow.createCell(2);
-            emailCell.setCellValue(vol.getEmailAddress());
+            Cell emailCell = secondInfoRow.createCell(2);
+            emailCell.setCellValue(currentEntry.getEmailAddress());
 //            emailCell.setCellStyle(volunteerInfoStyle);
-            Cell specialCell = newRow.createCell(4);
-            specialCell.setCellValue(vol.getSpecial());
+            Cell specialCell = secondInfoRow.createCell(4);
+            specialCell.setCellValue(currentEntry.getSpecial());
 //            specialCell.setCellStyle(volunteerInfoStyle);
         }
 
@@ -215,5 +178,36 @@ public class GDSEventbriteScript {
         fileOut.close();
 
         workbook.close();
+    }
+
+    private static void setExcelBorder (CellStyle style){
+        style.setBorderTop(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBorderRight(BorderStyle.THIN);
+        style.setRightBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+    }
+
+    private static void setVolunteerInfo(Volunteer vol, CSVRecord CSVVolunteer){
+        vol.setFirstName(CSVVolunteer.get("First Name"));
+        vol.setLastName(CSVVolunteer.get("Last Name"));
+        vol.setHomeAddress(CSVVolunteer.get("Home Address 1"));
+        vol.setHomeAddressTwo(CSVVolunteer.get("Home Address 2"));
+        vol.setCity(CSVVolunteer.get("Home City"));
+        vol.setState(CSVVolunteer.get("Home State"));
+        vol.setZipCode(CSVVolunteer.get("Home Zip"));
+        vol.setCellPhone(CSVVolunteer.get("Cell Phone"));
+        vol.setVisitor(CSVVolunteer.get("Are you a Visitor to PRUMC?"));
+        vol.setFirstTime(CSVVolunteer.get("Is this your first Great Day of Service?"));
+        vol.setAge(CSVVolunteer.get("Age?"));
+        vol.setFirstChoice(CSVVolunteer.get(23));
+        vol.setSecondChoice(CSVVolunteer.get(24));
+        vol.setThirdChoice(CSVVolunteer.get(25));
+        vol.setEmailAddress(CSVVolunteer.get("Email"));
+        vol.setSpecial(CSVVolunteer.get(19));
+        vol.trimChoices();
     }
 }

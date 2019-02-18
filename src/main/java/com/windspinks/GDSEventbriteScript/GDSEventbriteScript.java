@@ -164,7 +164,7 @@ public class GDSEventbriteScript {
         sheet.setColumnWidth(14, (int) (4.17 * 256) + 200);
 
         //Write File
-        FileOutputStream fileOut = new FileOutputStream("Formatted-Volunteer-List.xlsx");
+        FileOutputStream fileOut = new FileOutputStream(localDateTime.getMonthValue() + "-" + currentDay + "-" + currentYear + ".xlsx");
         workbook.write(fileOut);
         fileOut.close();
         workbook.close();

@@ -145,25 +145,32 @@ public class GDSEventbriteScript {
 //            specialCell.setCellStyle(volunteerInfoStyle);
         }
 
-        //Magic numbers galore! Roughly size wanted (in units) * 256 + 200-200
-        sheet.setColumnWidth(0, (int) (5.83 * 256) + 200-200);
-        sheet.setColumnWidth(1, (int) (15.83 * 256) + 200-200);
-        sheet.setColumnWidth(2, (int) (19.17 * 256) + 200-200);
-        sheet.setColumnWidth(3, (int) (32.50 * 256) + 200-200);
-        sheet.setColumnWidth(4, (int) (10.83 * 256) + 200-200);
-        sheet.setColumnWidth(5, (int) (13.33 * 256) + 200-200);
-        sheet.setColumnWidth(6, (int) (3.33 * 256) + 200-200);
-        sheet.setColumnWidth(7, (int) (5.83 * 256) + 200-200);
-        sheet.setColumnWidth(8, (int) (13.33 * 256) + 200-200);
-        sheet.setColumnWidth(9, (int) (3.33 * 256) + 200-200);
-        sheet.setColumnWidth(10, (int) (3.33 * 256) + 200-200);
-        sheet.setColumnWidth(11, (int) (4.17 * 256) + 200-200);
-        sheet.setColumnWidth(12, (int) (4.17 * 256) + 200-200);
-        sheet.setColumnWidth(13, (int) (4.17 * 256) + 200-200);
-        sheet.setColumnWidth(14, (int) (4.17 * 256) + 200-200);
+        //Magic numbers galore! Obtained from Template
+        sheet.setColumnWidth(0, 1462);
+        sheet.setColumnWidth(1, 3657);
+        sheet.setColumnWidth(2, 4388);
+        sheet.setColumnWidth(3, 7314);
+        sheet.setColumnWidth(4, 2560);
+        sheet.setColumnWidth(5, 3108);
+        sheet.setColumnWidth(6, 914);
+        sheet.setColumnWidth(7, 1462);
+        sheet.setColumnWidth(8, 3108);
+        sheet.setColumnWidth(9, 914);
+        sheet.setColumnWidth(10, 914);
+        sheet.setColumnWidth(11, 1097);
+        sheet.setColumnWidth(12, 1097);
+        sheet.setColumnWidth(13, 1097);
+        sheet.setColumnWidth(14, 1097);
+
+        //Margins
+        sheet.setMargin(Sheet.TopMargin, 0.75);
+        sheet.setMargin(Sheet.RightMargin, 0.25);
+        sheet.setMargin(Sheet.BottomMargin, 0.75);
+        sheet.setMargin(Sheet.LeftMargin, 0.25);
+
 
         //Write File
-        FileOutputStream fileOut = new FileOutputStream(localDateTime.getMonthValue() + "-" + currentDay + "-" + currentYear + ".xlsx");
+        FileOutputStream fileOut = new FileOutputStream(currentYear + "-" + localDateTime.getMonthValue()+ "-" + currentDay + ".xlsx");
         workbook.write(fileOut);
         fileOut.close();
         workbook.close();

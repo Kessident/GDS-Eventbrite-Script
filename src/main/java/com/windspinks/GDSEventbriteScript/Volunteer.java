@@ -93,6 +93,12 @@ public class Volunteer {
         if (!cellPhone.contains("-")){
             cellPhone = cellPhone.replaceFirst("(\\d{3})(\\d{3})(\\d+)", "$1-$2-$3");
         }
+        if (cellPhone.contains("(")) {
+            cellPhone = cellPhone.replace("(", "");
+        }
+        if (cellPhone.contains(")")) {
+            cellPhone = cellPhone.replace(")", "");
+        }
         this.cellPhone = cellPhone;
     }
 

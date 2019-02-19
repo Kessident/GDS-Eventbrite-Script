@@ -193,11 +193,11 @@ public class GDSEventbriteScript {
         vol.setVisitor(CSVVolunteer.get("Are you a Visitor to PRUMC?"));
         vol.setFirstTime(CSVVolunteer.get("Is this your first Great Day of Service?"));
         vol.setAge(CSVVolunteer.get("Age?"));
-        vol.setFirstChoice(CSVVolunteer.get(23));
-        vol.setSecondChoice(CSVVolunteer.get(24));
-        vol.setThirdChoice(CSVVolunteer.get(25));
+        vol.setFirstChoice(CSVVolunteer.get("First Choice of Project (38 Projects - be sure to scroll down!)"));
+        vol.setSecondChoice(CSVVolunteer.get("Second Choice of Project (38 Projects - be sure to scroll down!)"));
+        vol.setThirdChoice(CSVVolunteer.get("Third Choice of Project (38 Projects - be sure to scroll down!)"));
         vol.setEmailAddress(CSVVolunteer.get("Email"));
-        vol.setSpecial(CSVVolunteer.get(19));
+        vol.setSpecial(CSVVolunteer.get("Do you have any special skills, tools, equipment, etc?"));
         vol.trimChoices();
     }
 }

@@ -145,26 +145,25 @@ public class GDSEventbriteScript {
 //            specialCell.setCellStyle(volunteerInfoStyle);
         }
 
-        //Magic numbers galore! Roughly size wanted (in units) * 256 + 200
-        sheet.setColumnWidth(0, (int) (5.83 * 256));
-        sheet.setColumnWidth(0, (int) (5.83 * 256) + 200);
-        sheet.setColumnWidth(1, (int) (15.83 * 256) + 200);
-        sheet.setColumnWidth(2, (int) (19.17 * 256) + 200);
-        sheet.setColumnWidth(3, (int) (32.50 * 256) + 200);
-        sheet.setColumnWidth(4, (int) (10.83 * 256) + 200);
-        sheet.setColumnWidth(5, (int) (13.33 * 256) + 200);
-        sheet.setColumnWidth(6, (int) (3.33 * 256) + 200);
-        sheet.setColumnWidth(7, (int) (5.83 * 256) + 200);
-        sheet.setColumnWidth(8, (int) (13.33 * 256) + 200);
-        sheet.setColumnWidth(9, (int) (3.33 * 256) + 200);
-        sheet.setColumnWidth(10, (int) (3.33 * 256) + 200);
-        sheet.setColumnWidth(11, (int) (4.17 * 256) + 200);
-        sheet.setColumnWidth(12, (int) (4.17 * 256) + 200);
-        sheet.setColumnWidth(13, (int) (4.17 * 256) + 200);
-        sheet.setColumnWidth(14, (int) (4.17 * 256) + 200);
+        //Magic numbers galore! Roughly size wanted (in units) * 256 + 200-200
+        sheet.setColumnWidth(0, (int) (5.83 * 256) + 200-200);
+        sheet.setColumnWidth(1, (int) (15.83 * 256) + 200-200);
+        sheet.setColumnWidth(2, (int) (19.17 * 256) + 200-200);
+        sheet.setColumnWidth(3, (int) (32.50 * 256) + 200-200);
+        sheet.setColumnWidth(4, (int) (10.83 * 256) + 200-200);
+        sheet.setColumnWidth(5, (int) (13.33 * 256) + 200-200);
+        sheet.setColumnWidth(6, (int) (3.33 * 256) + 200-200);
+        sheet.setColumnWidth(7, (int) (5.83 * 256) + 200-200);
+        sheet.setColumnWidth(8, (int) (13.33 * 256) + 200-200);
+        sheet.setColumnWidth(9, (int) (3.33 * 256) + 200-200);
+        sheet.setColumnWidth(10, (int) (3.33 * 256) + 200-200);
+        sheet.setColumnWidth(11, (int) (4.17 * 256) + 200-200);
+        sheet.setColumnWidth(12, (int) (4.17 * 256) + 200-200);
+        sheet.setColumnWidth(13, (int) (4.17 * 256) + 200-200);
+        sheet.setColumnWidth(14, (int) (4.17 * 256) + 200-200);
 
         //Write File
-        FileOutputStream fileOut = new FileOutputStream("Formatted-Volunteer-List.xlsx");
+        FileOutputStream fileOut = new FileOutputStream(localDateTime.getMonthValue() + "-" + currentDay + "-" + currentYear + ".xlsx");
         workbook.write(fileOut);
         fileOut.close();
         workbook.close();

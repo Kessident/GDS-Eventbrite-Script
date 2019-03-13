@@ -2,35 +2,67 @@ package com.windspinks.GDSEventbriteScript;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class GDSEventbriteScript {
     private static String[] columns = {"Vol #", "First Name", "Last Name", "Home Address 1", "HA 2", "City", "ST", "ZIP", "Cell Phone", "V?", "1?", "Age", "1ST", "2ND", "3RD"};
+    private static Logger logger = LogManager.getLogger(GDSEventbriteScript.class);
 
-
-    public static void main(String[] args) throws IOException, InvalidFormatException {
+    public static void main(String[] args) {
         //Take CSV data into ArrayList
         ArrayList<Volunteer> volunteerList = new ArrayList<>();
 
         File currentDirectory = new File(System.getProperty("user.dir"));
         File CSVFile = null;
-        for (File file : currentDirectory.listFiles()) {
-            //CSV File format "report-yyyy-mm-ddThhmm.csv"
-            if (file.getName().contains("report-") && file.getName().contains(".csv")) {
-                CSVFile = file;
+        File[] currDirectoryFiles = currentDirectory.listFiles();
+
+        if (currDirectoryFiles == null) {
+            logger.error("'user.dir' not a directory");
+            System.exit(1);
+        } else {
+            for (File file : currDirectoryFiles) {
+                //CSV File format "report-yyyy-mm-ddThhmm.csv"
+                // TODO: 2/28/19 Select Only Latest CSV file
+                if (file.getName().contains("report-") && file.getName().contains(".csv")) {
+                    CSVFile = file;
+                }
             }
         }
+<<<<<<< HEAD
         if (CSVFile == null) {
+=======
+
+        if (CSVFile == null) {
+            logger.error("CSV File Not Found");
             System.exit(1);
         }
-        Reader eventbriteCSVData = new FileReader(CSVFile);
-        Iterable<CSVRecord> volunteerCSVList = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(eventbriteCSVData);
+
+        Reader eventbriteCSVData = null;
+        try {
+            eventbriteCSVData = new FileReader(CSVFile);
+        } catch (FileNotFoundException | NullPointerException ex) {
+            logger.catching(ex);
+            System.exit(1);
+        }
+
+        Iterable<CSVRecord> volunteerCSVList = null;
+        try {
+            volunteerCSVList = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(eventbriteCSVData);
+        } catch (IOException ex) {
+            logger.catching(ex);
+>>>>>>> dev
+            System.exit(1);
+        }
+
         for (CSVRecord CSVVolunteer : volunteerCSVList) {
             Volunteer currentVolunteer = new Volunteer();
             setVolunteerInfo(currentVolunteer, CSVVolunteer);
@@ -48,16 +80,19 @@ public class GDSEventbriteScript {
         headerCellStyle.setFont(headerFont);
         headerCellStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
         setExcelBorder(headerCellStyle);
 
         //Vol# Column Style
         CellStyle volColumnStyle = workbook.createCellStyle();
         volColumnStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         volColumnStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
         setExcelBorder(volColumnStyle);
 
         //Volunteer Information Style
         CellStyle volunteerInfoStyle = workbook.createCellStyle();
+
         setExcelBorder(volunteerInfoStyle);
 
         //Initial Row - Page num, date
@@ -87,6 +122,7 @@ public class GDSEventbriteScript {
             }
 
             //16 Vol Rows
+            // TODO: 2/19/19 right and bottom border
             Volunteer currentEntry = volunteerList.get(i);
             Row firstInfoRow = sheet.createRow(rowNum++);
             firstInfoRow.createCell(0).setCellStyle(volColumnStyle);
@@ -168,12 +204,32 @@ public class GDSEventbriteScript {
         sheet.setMargin(Sheet.BottomMargin, 0.75);
         sheet.setMargin(Sheet.LeftMargin, 0.25);
 
+        // TODO: 2/19/19 Page Orientation
 
         //Write File
-        FileOutputStream fileOut = new FileOutputStream(currentYear + "-" + localDateTime.getMonthValue()+ "-" + currentDay + ".xlsx");
-        workbook.write(fileOut);
-        fileOut.close();
-        workbook.close();
+        // TODO: 2/19/19 Check for currentYear folder, if so, save there, else save working directory
+
+        FileOutputStream fileOut = null;
+        try {
+            String currentYearFileName = currentDirectory.getName() + "/" + currentYear;
+            if (Files.exists(Paths.get(currentYearFileName))) {
+                fileOut = new FileOutputStream(currentYear + "/" + currentYear + "-" + localDateTime.getMonthValue() + "-" + currentDay + ".xlsx");
+            } else {
+                fileOut = new FileOutputStream(currentYear + "-" + localDateTime.getMonthValue() + "-" + currentDay + ".xlsx");
+            }
+        } catch (FileNotFoundException ex) {
+            logger.catching(ex);
+            System.exit(1);
+        }
+
+        try {
+            workbook.write(fileOut);
+            fileOut.close();
+            workbook.close();
+        } catch (IOException ex) {
+            logger.catching(ex);
+            System.exit(1);
+        }
     }
 
     private static void setExcelBorder(CellStyle style) {

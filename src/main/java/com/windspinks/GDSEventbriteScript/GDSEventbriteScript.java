@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFPrintSetup;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GDSEventbriteScript {
     private static String[] columns = {"Vol #", "First Name", "Last Name", "Home Address 1", "HA 2", "City", "ST", "ZIP", "Cell Phone", "V?", "1?", "Age", "1ST", "2ND", "3RD"};
@@ -29,9 +31,9 @@ public class GDSEventbriteScript {
             logger.error("'user.dir' not a directory");
             System.exit(1);
         } else {
+            Arrays.sort(currDirectoryFiles);
             for (File file : currDirectoryFiles) {
                 //CSV File format "report-yyyy-mm-ddThhmm.csv"
-                // TODO: 2/28/19 Select Only Latest CSV file
                 if (file.getName().contains("report-") && file.getName().contains(".csv")) {
                     CSVFile = file;
                 }
@@ -80,20 +82,22 @@ public class GDSEventbriteScript {
         headerCellStyle.setFont(headerFont);
         headerCellStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
         headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        setExcelBorder(headerCellStyle);
+        setExcelBorder(headerCellStyle, true, true, true, true);
 
         //Vol# Column Style
         CellStyle volColumnStyle = workbook.createCellStyle();
         volColumnStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         volColumnStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        setExcelBorder(volColumnStyle);
+        setExcelBorder(volColumnStyle, true, true, true, true);
 
         //Volunteer Information Style
         CellStyle volunteerInfoStyle = workbook.createCellStyle();
+        setExcelBorder(volunteerInfoStyle, true, true, true, true);
 
-        setExcelBorder(volunteerInfoStyle);
+        CellStyle rightBorderStyle = workbook.createCellStyle();
+        setExcelBorder(rightBorderStyle, false, true, true, false);
+        CellStyle bottomBorderStyle = workbook.createCellStyle();
+        setExcelBorder(bottomBorderStyle, false, false, true, false);
 
         //Initial Row - Page num, date
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -105,7 +109,7 @@ public class GDSEventbriteScript {
         int rowNum = 0;
         for (int i = 0; i < volunteerList.size(); i++) {
             if (i % 16 == 0) {
-                //Create Init Row
+                //Create Inittial Row: pg Num, date
                 Row initRow = sheet.createRow(rowNum++);
                 Cell pageTitle = initRow.createCell(1);
                 pageTitle.setCellValue("Eventbrite Signups " + currentDateFormatted);
@@ -170,15 +174,21 @@ public class GDSEventbriteScript {
             thirdChoiceCell.setCellValue(currentEntry.getThirdChoice());
             thirdChoiceCell.setCellStyle(volunteerInfoStyle);
 
-            Row secondInfoRow = sheet.createRow(rowNum++);
-            secondInfoRow.createCell(0).setCellStyle(volColumnStyle);
 
+            Row secondInfoRow = sheet.createRow(rowNum++);
+            for (int j = 1; j < 14; j++){
+                secondInfoRow.createCell(j).setCellStyle(bottomBorderStyle);
+            }
+
+            secondInfoRow.createCell(0).setCellStyle(volColumnStyle);
             Cell emailCell = secondInfoRow.createCell(2);
             emailCell.setCellValue(currentEntry.getEmailAddress());
-//            emailCell.setCellStyle(volunteerInfoStyle);
+            emailCell.setCellStyle(bottomBorderStyle);
             Cell specialCell = secondInfoRow.createCell(4);
             specialCell.setCellValue(currentEntry.getSpecial());
-//            specialCell.setCellStyle(volunteerInfoStyle);
+            specialCell.setCellStyle(bottomBorderStyle);
+
+            secondInfoRow.createCell(14).setCellStyle(rightBorderStyle);
         }
 
         //Magic numbers galore! Obtained from Template
@@ -204,14 +214,14 @@ public class GDSEventbriteScript {
         sheet.setMargin(Sheet.BottomMargin, 0.75);
         sheet.setMargin(Sheet.LeftMargin, 0.25);
 
-        // TODO: 2/19/19 Page Orientation
-
+        sheet.getPrintSetup().setLandscape(true);
+        sheet.getPrintSetup().setPaperSize(XSSFPrintSetup.LETTER_PAPERSIZE);
         //Write File
-        // TODO: 2/19/19 Check for currentYear folder, if so, save there, else save working directory
-
         FileOutputStream fileOut = null;
         try {
-            String currentYearFileName = currentDirectory.getName() + "/" + currentYear;
+            // TODO: 3/14/19 Set filename as name of input file, not just current date? If two in same day, need different names, use hour?
+            String currentYearFileName = currentDirectory + "/" + currentYear;
+
             if (Files.exists(Paths.get(currentYearFileName))) {
                 fileOut = new FileOutputStream(currentYear + "/" + currentYear + "-" + localDateTime.getMonthValue() + "-" + currentDay + ".xlsx");
             } else {
@@ -232,15 +242,23 @@ public class GDSEventbriteScript {
         }
     }
 
-    private static void setExcelBorder(CellStyle style) {
-        style.setBorderTop(BorderStyle.THIN);
-        style.setTopBorderColor(IndexedColors.BLACK.getIndex());
-        style.setBorderRight(BorderStyle.THIN);
-        style.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+    private static void setExcelBorder(CellStyle style, boolean doTop, boolean doRight, boolean doBottom, boolean doLeft) {
+        if (doTop) {
+            style.setBorderTop(BorderStyle.THIN);
+            style.setTopBorderColor(IndexedColors.BLACK.getIndex());
+        }
+        if (doRight) {
+            style.setBorderRight(BorderStyle.THIN);
+            style.setRightBorderColor(IndexedColors.BLACK.getIndex());
+        }
+        if (doBottom) {
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        }
+        if (doLeft) {
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+        }
     }
 
     private static void setVolunteerInfo(Volunteer vol, CSVRecord CSVVolunteer) {

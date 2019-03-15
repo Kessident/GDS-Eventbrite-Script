@@ -122,7 +122,6 @@ public class GDSEventbriteScript {
             }
 
             //16 Vol Rows
-            // TODO: 2/19/19 right and bottom border
             Volunteer currentEntry = volunteerList.get(i);
             Row firstInfoRow = sheet.createRow(rowNum++);
             firstInfoRow.createCell(0).setCellStyle(volColumnStyle);

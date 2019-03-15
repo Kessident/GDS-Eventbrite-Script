@@ -54,7 +54,7 @@ public class Volunteer {
     }
 
     public void setHomeAddressTwo(String homeAddressTwo) {
-        if (homeAddressTwo.equals("Apartment, suite, unit etc. (optional)") || homeAddressTwo.equals("None")){
+        if (homeAddressTwo.equals("Apartment, suite, unit etc. (optional)") || homeAddressTwo.equals("None")) {
             this.homeAddressTwo = "";
         } else {
             this.homeAddressTwo = homeAddressTwo;
@@ -90,7 +90,7 @@ public class Volunteer {
     }
 
     public void setCellPhone(String cellPhone) {
-        if (!cellPhone.contains("-")){
+        if (!cellPhone.contains("-")) {
             cellPhone = cellPhone.replaceFirst("(\\d{3})(\\d{3})(\\d+)", "$1-$2-$3");
         }
         if (cellPhone.contains("(")) {
@@ -163,20 +163,34 @@ public class Volunteer {
     }
 
     public void setSpecial(String special) {
-        if (special.toLowerCase().equals("no") || special.toLowerCase().equals("none")){} else {
-        this.special = special;
+        if (special.toLowerCase().equals("no") || special.toLowerCase().equals("none")) {
+            this.special = null;
+        } else {
+            this.special = special;
         }
     }
 
     public void trimChoices() {
         if (firstChoice != null && !firstChoice.equals("")) {
-            firstChoice = firstChoice.substring(0, firstChoice.indexOf("."));
+            if (firstChoice.contains("*NUMBER 34")) {
+                firstChoice = "34";
+            } else {
+                firstChoice = firstChoice.substring(0, firstChoice.indexOf("."));
+            }
         }
         if (secondChoice != null && !secondChoice.equals("")) {
-            secondChoice = secondChoice.substring(0, secondChoice.indexOf("."));
+            if (secondChoice.contains("*NUMBER 34")) {
+                secondChoice = "34";
+            } else {
+                secondChoice = secondChoice.substring(0, secondChoice.indexOf("."));
+            }
         }
         if (thirdChoice != null && !thirdChoice.equals("")) {
-            thirdChoice = thirdChoice.substring(0, thirdChoice.indexOf("."));
+            if (thirdChoice.contains("*NUMBER 34")) {
+                thirdChoice = "34";
+            } else {
+                thirdChoice = thirdChoice.substring(0, thirdChoice.indexOf("."));
+            }
         }
 
     }

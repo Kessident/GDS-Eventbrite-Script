@@ -39,9 +39,6 @@ public class GDSEventbriteScript {
                 }
             }
         }
-<<<<<<< HEAD
-        if (CSVFile == null) {
-=======
 
         if (CSVFile == null) {
             logger.error("CSV File Not Found");
@@ -61,7 +58,6 @@ public class GDSEventbriteScript {
             volunteerCSVList = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(eventbriteCSVData);
         } catch (IOException ex) {
             logger.catching(ex);
->>>>>>> dev
             System.exit(1);
         }
 
@@ -109,7 +105,7 @@ public class GDSEventbriteScript {
         int rowNum = 0;
         for (int i = 0; i < volunteerList.size(); i++) {
             if (i % 16 == 0) {
-                //Create Inittial Row: pg Num, date
+                //Create Initial Row: pg Num, date
                 Row initRow = sheet.createRow(rowNum++);
                 Cell pageTitle = initRow.createCell(1);
                 pageTitle.setCellValue("Eventbrite Signups " + currentDateFormatted);
@@ -218,13 +214,13 @@ public class GDSEventbriteScript {
         //Write File
         FileOutputStream fileOut = null;
         try {
-            // TODO: 3/14/19 Set filename as name of input file, not just current date? If two in same day, need different names, use hour?
-            String currentYearFileName = currentDirectory + "/" + currentYear;
+            String currentYearDirectory = currentDirectory + "/" + currentYear;
+            String excelFileName = getFileNameFrom(CSVFile.toString());
 
-            if (Files.exists(Paths.get(currentYearFileName))) {
-                fileOut = new FileOutputStream(currentYear + "/" + currentYear + "-" + localDateTime.getMonthValue() + "-" + currentDay + ".xlsx");
+            if (Files.exists(Paths.get(currentYearDirectory))) {
+                fileOut = new FileOutputStream(currentYear + "/" + excelFileName);
             } else {
-                fileOut = new FileOutputStream(currentYear + "-" + localDateTime.getMonthValue() + "-" + currentDay + ".xlsx");
+                fileOut = new FileOutputStream(excelFileName);
             }
         } catch (FileNotFoundException ex) {
             logger.catching(ex);
@@ -278,5 +274,12 @@ public class GDSEventbriteScript {
         vol.setEmailAddress(CSVVolunteer.get("Email"));
         vol.setSpecial(CSVVolunteer.get("Do you have any special skills, tools, equipment, etc?"));
         vol.trimChoices();
+    }
+
+    private static String getFileNameFrom (String CSVFile) {
+        String[] csvFileSplit = CSVFile.split("-");
+        //report-2019-03-15T0950
+        //YYYY-MM-DD--HH.xlsx
+        return csvFileSplit[1] + "-" + csvFileSplit[2] + "-" + csvFileSplit[3].substring(0,2) + "--" + csvFileSplit[3].substring(3,5) + ".xlsx";
     }
 }

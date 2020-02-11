@@ -18,6 +18,7 @@ import java.util.Arrays;
 public class GDSEventbriteScript {
     private static String[] columns = {"Vol #", "First Name", "Last Name", "Home Address 1", "HA 2", "City", "ST", "ZIP", "Cell Phone", "V?", "1?", "Age", "1ST", "2ND", "3RD"};
     private static Logger logger = LogManager.getLogger(GDSEventbriteScript.class);
+    private static final int NUM_PROJECTS = 36;
 
     public static void main(String[] args) {
         //Take CSV data into ArrayList
@@ -268,9 +269,9 @@ public class GDSEventbriteScript {
         vol.setVisitor(CSVVolunteer.get("Are you a Visitor to PRUMC?"));
         vol.setFirstTime(CSVVolunteer.get("Is this your first Great Day of Service?"));
         vol.setAge(CSVVolunteer.get("Age?"));
-        vol.setFirstChoice(CSVVolunteer.get("First Choice of Project (38 Projects - be sure to scroll down!)"));
-        vol.setSecondChoice(CSVVolunteer.get("Second Choice of Project (38 Projects - be sure to scroll down!)"));
-        vol.setThirdChoice(CSVVolunteer.get("Third Choice of Project (38 Projects - be sure to scroll down!)"));
+        vol.setFirstChoice(CSVVolunteer.get("First Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
+        vol.setSecondChoice(CSVVolunteer.get("Second Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
+        vol.setThirdChoice(CSVVolunteer.get("Third Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
         vol.setEmailAddress(CSVVolunteer.get("Email"));
         vol.setSpecial(CSVVolunteer.get("Do you have any special skills, tools, equipment, etc?"));
         vol.trimChoices();

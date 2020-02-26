@@ -171,28 +171,15 @@ public class Volunteer {
     }
 
     public void trimChoices() {
-        if (firstChoice != null && !firstChoice.equals("")) {
-            if (firstChoice.contains("*NUMBER 34")) {
-                firstChoice = "34";
-            } else {
-                firstChoice = firstChoice.substring(0, firstChoice.indexOf("."));
-            }
-        }
-        if (secondChoice != null && !secondChoice.equals("")) {
-            if (secondChoice.contains("*NUMBER 34")) {
-                secondChoice = "34";
-            } else {
-                secondChoice = secondChoice.substring(0, secondChoice.indexOf("."));
-            }
-        }
-        if (thirdChoice != null && !thirdChoice.equals("")) {
-            if (thirdChoice.contains("*NUMBER 34")) {
-                thirdChoice = "34";
-            } else {
-                thirdChoice = thirdChoice.substring(0, thirdChoice.indexOf("."));
-            }
-        }
-
+        firstChoice = (firstChoice == null || firstChoice.equals("")) ? ""
+            : firstChoice.length() < 3 ? firstChoice
+            : firstChoice.substring(0,3);
+        secondChoice = (secondChoice == null || secondChoice.equals("")) ? ""
+            : secondChoice.length() < 3 ? secondChoice
+            : secondChoice.substring(0,3);
+        thirdChoice = (thirdChoice == null || thirdChoice.equals("")) ? ""
+            : thirdChoice.length() < 3 ? thirdChoice
+            : thirdChoice.substring(0,3);
     }
 
     @Override

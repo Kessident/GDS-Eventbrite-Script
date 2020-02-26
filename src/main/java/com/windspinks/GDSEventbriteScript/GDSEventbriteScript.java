@@ -258,23 +258,33 @@ public class GDSEventbriteScript {
     }
 
     private static void setVolunteerInfo(Volunteer vol, CSVRecord CSVVolunteer) {
-        vol.setFirstName(CSVVolunteer.get("First Name"));
-        vol.setLastName(CSVVolunteer.get("Last Name"));
-        vol.setHomeAddress(CSVVolunteer.get("Home Address 1"));
-        vol.setHomeAddressTwo(CSVVolunteer.get("Home Address 2"));
-        vol.setCity(CSVVolunteer.get("Home City"));
-        vol.setState(CSVVolunteer.get("Home State"));
-        vol.setZipCode(CSVVolunteer.get("Home Zip"));
-        vol.setCellPhone(CSVVolunteer.get("Cell Phone"));
-        vol.setVisitor(CSVVolunteer.get("Are you a Visitor to PRUMC?"));
-        vol.setFirstTime(CSVVolunteer.get("Is this your first Great Day of Service?"));
-        vol.setAge(CSVVolunteer.get("Age?"));
-        vol.setFirstChoice(CSVVolunteer.get("First Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
-        vol.setSecondChoice(CSVVolunteer.get("Second Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
-        vol.setThirdChoice(CSVVolunteer.get("Third Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
-        vol.setEmailAddress(CSVVolunteer.get("Email"));
-        vol.setSpecial(CSVVolunteer.get("Do you have any special skills, tools, equipment, etc?"));
-        vol.trimChoices();
+        try {
+            vol.setFirstName(CSVVolunteer.get("First Name"));
+            vol.setLastName(CSVVolunteer.get("Last Name"));
+            vol.setHomeAddress(CSVVolunteer.get("Home Address 1"));
+            vol.setHomeAddressTwo(CSVVolunteer.get("Home Address 2"));
+            vol.setCity(CSVVolunteer.get("Home City"));
+            vol.setState(CSVVolunteer.get("Home State"));
+            vol.setZipCode(CSVVolunteer.get("Home Zip"));
+            vol.setCellPhone(CSVVolunteer.get("Cell Phone"));
+            vol.setVisitor(CSVVolunteer.get("Are you a Visitor to PRUMC?"));
+            vol.setFirstTime(CSVVolunteer.get("Is this your first Great Day of Service?"));
+            vol.setAge(CSVVolunteer.get("Age?"));
+            vol.setFirstChoice(CSVVolunteer.get("First Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
+            vol.setSecondChoice(CSVVolunteer.get("Second Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
+            vol.setThirdChoice(CSVVolunteer.get("Third Choice of Project (" + NUM_PROJECTS + " Projects - be sure to scroll down!)"));
+            vol.setEmailAddress(CSVVolunteer.get("Email"));
+            vol.setSpecial(CSVVolunteer.get("Do you have any special skills, tools, equipment, etc?"));
+            vol.trimChoices();
+        } catch (Exception ex) {
+            logger.error("Exception error: " + ex.getMessage());
+            logger.info("Error on volunteer: " + vol.getFirstName() + " " + vol.getLastName());
+            String stacktrace = "\n";
+            for (StackTraceElement element : ex.getStackTrace()) {
+                stacktrace =  stacktrace + '\t' + element.toString() +'\n';
+            }
+            logger.info("Stacktrace: " + stacktrace);
+        }
     }
 
     private static String getFileNameFrom (String CSVFile) {
